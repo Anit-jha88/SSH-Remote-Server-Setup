@@ -20,7 +20,7 @@ This project demonstrates how to configure a remote Linux server to allow SSH co
 
 https://github.com/Anit-jha88/SSH-Remote-Server-Setup
 
-> Replace the URL above with your actual GitHub repository URL if the repository name is different.
+
 
 ---
 
