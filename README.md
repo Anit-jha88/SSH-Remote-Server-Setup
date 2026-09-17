@@ -18,7 +18,7 @@ This project demonstrates how to configure a remote Linux server to allow SSH co
 
 **GitHub Repository:**
 
-https://github.com/Anit-jha88/SSH-Remote-Server-Setup
+[https://github.com/Anit-jha88/SSH-Remote-Server-Setup](https://roadmap.sh/projects/ssh-remote-server-setup)
 
 
 
