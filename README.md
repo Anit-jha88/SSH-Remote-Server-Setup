@@ -1,105 +1,100 @@
-# Remote Linux Server SSH Access with Multiple SSH Keys
-
-
-## 🔗 Project URL
-
-**GitHub Repository:**  
-https://github.com/Anit-jha88/remote-linux-ssh
+# Remote Linux Server with Multiple SSH Keys
 
 ## 📌 Project Overview
 
-This project demonstrates how to set up a remote Linux server and configure SSH access using **two separate SSH key pairs**.
+This project demonstrates how to configure a remote Linux server to allow SSH connections using **two separate SSH key pairs**.
 
-The objective is to:
+### Objectives
 
-* Provision a remote Linux server.
-* Generate two independent SSH key pairs.
+* Create a remote Linux server.
+* Generate two SSH key pairs.
 * Add both public keys to the remote server.
-* Configure SSH authentication.
-* Verify that the server can be accessed using either private key.
-
-This is a basic but important DevOps/Linux administration exercise for understanding **SSH authentication and key-based access**.
+* Configure SSH key-based authentication.
+* Verify SSH access using both private keys.
 
 ---
 
-## 🏗️ Architecture
+## 🔗 Project Page URL
+
+**GitHub Repository:**
+
+https://github.com/Anit-jha88/remote-linux-ssh
+
+> Replace the URL above with your actual GitHub repository URL if the repository name is different.
+
+---
+
+## 🛠️ Requirements
+
+Before starting, make sure you have:
+
+* AWS / DigitalOcean account
+* Remote Ubuntu Linux server
+* SSH client
+* Terminal / PowerShell / WSL
+* Git (optional)
+
+---
+
+# 🚀 Setup Instructions
+
+## Step 1: Create a Remote Linux Server
+
+Create an Ubuntu server using AWS EC2, DigitalOcean, or another cloud provider.
+
+Example configuration:
 
 ```text
-                    Internet
-                       |
-                       |
-                SSH - Port 22
-                       |
-                       ▼
-             ┌──────────────────┐
-             │ Remote Linux     │
-             │ Server           │
-             │                  │
-             │ ~/.ssh/          │
-             │ authorized_keys  │
-             │                  │
-             │ ┌──────────────┐ │
-             │ │ Public Key 1 │ │
-             │ └──────────────┘ │
-             │ ┌──────────────┐ │
-             │ │ Public Key 2 │ │
-             │ └──────────────┘ │
-             └──────────────────┘
-                    ▲      ▲
-                    │      │
-                 Key 1    Key 2
-                    │      │
-          ┌─────────┴──────┴─────────┐
-          │       Local Machine      │
-          │                          │
-          │ devops_key1              │
-          │ devops_key2              │
-          └──────────────────────────┘
+OS: Ubuntu 24.04 LTS
+SSH Port: 22
 ```
 
----
-
-## 🛠️ Technologies Used
-
-* Linux / Ubuntu
-* AWS EC2 / DigitalOcean
-* SSH
-* OpenSSH
-* Ed25519 SSH Keys
-* Git & GitHub
-
----
-
-# 🚀 Step 1: Provision the Linux Server
-
-A remote Ubuntu server was provisioned using a cloud provider.
+Allow inbound SSH traffic on port `22` from your IP address.
 
 Example:
 
-**Cloud Provider:** AWS EC2
-
-**Operating System:** Ubuntu 24.04 LTS
-
-**SSH Port:** 22
-
-The server's security group/firewall was configured to allow SSH access.
-
-Example inbound rule:
-
 ```text
-Type: SSH
 Protocol: TCP
 Port: 22
-Source: My IP
+Source: Your IP Address
 ```
-
-> For production environments, avoid opening SSH (`22`) to `0.0.0.0/0` unless there is a specific security requirement.
 
 ---
 
-# 🔑 Step 2: Generate the First SSH Key Pair
+## Step 2: Connect to the Server
 
-On the local machine:
+If using AWS EC2:
+
+```bash
+chmod 400 aws-server.pem
+```
+
+Connect:
+
+```bash
+ssh -i aws-server.pem ubuntu@SERVER_IP
+```
+
+Replace:
+
+```text
+SERVER_IP
+```
+
+with your server's public IP address.
+
+Verify the connection:
+
+```bash
+whoami
+hostname
+```
+
+---
+
+# 🔑 Step 3: Create SSH Key Pair 1
+
+On your local machine:
 
 ```bash
 ssh-keygen -t ed25519 -f ~/.ssh/devops_key1
@@ -112,20 +107,23 @@ This creates:
 ~/.ssh/devops_key1.pub
 ```
 
-Where:
+The private key is:
 
 ```text
-devops_key1      → Private Key
-devops_key1.pub  → Public Key
+devops_key1
 ```
 
-The private key must be kept secure and should never be committed to GitHub.
+The public key is:
+
+```text
+devops_key1.pub
+```
 
 ---
 
-# 🔐 Step 3: Generate the Second SSH Key Pair
+# 🔐 Step 4: Create SSH Key Pair 2
 
-Generate another independent key pair:
+Generate the second key pair:
 
 ```bash
 ssh-keygen -t ed25519 -f ~/.ssh/devops_key2
@@ -138,48 +136,23 @@ This creates:
 ~/.ssh/devops_key2.pub
 ```
 
-The local machine now contains two SSH key pairs:
-
-```text
-~/.ssh/
-│
-├── devops_key1
-├── devops_key1.pub
-├── devops_key2
-└── devops_key2.pub
-```
-
 ---
 
-# 📤 Step 4: Copy the First Public Key to the Server
+# 📤 Step 5: Add SSH Key 1 to the Server
 
-The first public key can be copied using:
+Copy the first public key:
 
 ```bash
 ssh-copy-id -i ~/.ssh/devops_key1.pub ubuntu@SERVER_IP
 ```
 
-Alternatively, display the public key:
+If `ssh-copy-id` is unavailable, display the key:
 
 ```bash
 cat ~/.ssh/devops_key1.pub
 ```
 
-Copy the output and add it to the server's:
-
-```bash
-~/.ssh/authorized_keys
-```
-
----
-
-# 📤 Step 5: Add the Second Public Key
-
-Display the second public key:
-
-```bash
-cat ~/.ssh/devops_key2.pub
-```
+Copy the output.
 
 On the remote server:
 
@@ -189,16 +162,9 @@ chmod 700 ~/.ssh
 nano ~/.ssh/authorized_keys
 ```
 
-Add the second public key below the first key.
+Paste the public key and save the file.
 
-The final file should look similar to:
-
-```text
-ssh-ed25519 AAAA... devops_key1
-ssh-ed25519 BBBB... devops_key2
-```
-
-Set the correct permissions:
+Set permissions:
 
 ```bash
 chmod 600 ~/.ssh/authorized_keys
@@ -206,58 +172,43 @@ chmod 600 ~/.ssh/authorized_keys
 
 ---
 
-# ⚙️ Step 6: Verify SSH Configuration
+# 📤 Step 6: Add SSH Key 2 to the Server
 
-Check the SSH server configuration:
+Display the second public key:
 
 ```bash
-sudo sshd -T | grep pubkeyauthentication
+cat ~/.ssh/devops_key2.pub
 ```
 
-Expected output:
+On the server:
+
+```bash
+nano ~/.ssh/authorized_keys
+```
+
+Add the second public key on a **new line**.
+
+The file should contain two keys:
 
 ```text
-pubkeyauthentication yes
+ssh-ed25519 AAAA... devops_key1
+ssh-ed25519 BBBB... devops_key2
 ```
 
-SSH public-key authentication must be enabled.
+Set permissions:
+
+```bash
+chmod 600 ~/.ssh/authorized_keys
+```
 
 ---
 
 # 🧪 Step 7: Test SSH Using Key 1
 
-From the local machine:
+From your local machine:
 
 ```bash
 ssh -i ~/.ssh/devops_key1 ubuntu@SERVER_IP
-```
-
-Verify the connection:
-
-```bash
-whoami
-```
-
-Expected:
-
-```text
-ubuntu
-```
-
-Exit the server:
-
-```bash
-exit
-```
-
----
-
-# 🧪 Step 8: Test SSH Using Key 2
-
-Now test the second key:
-
-```bash
-ssh -i ~/.ssh/devops_key2 ubuntu@SERVER_IP
 ```
 
 Verify:
@@ -266,7 +217,7 @@ Verify:
 whoami
 ```
 
-Expected:
+Expected output:
 
 ```text
 ubuntu
@@ -278,26 +229,52 @@ Exit:
 exit
 ```
 
-Both keys should now successfully authenticate against the same server.
+---
+
+# 🧪 Step 8: Test SSH Using Key 2
+
+Connect using the second private key:
+
+```bash
+ssh -i ~/.ssh/devops_key2 ubuntu@SERVER_IP
+```
+
+Verify:
+
+```bash
+whoami
+```
+
+Expected output:
+
+```text
+ubuntu
+```
+
+Exit:
+
+```bash
+exit
+```
 
 ---
 
-# 🔍 Verification
+# 🔍 Step 9: Verify Both Keys
 
-Check the authorized keys on the server:
+On the remote server:
 
 ```bash
 cat ~/.ssh/authorized_keys
 ```
 
-Expected:
+You should see both public keys:
 
 ```text
 ssh-ed25519 AAAA... devops_key1
 ssh-ed25519 BBBB... devops_key2
 ```
 
-Test both connections:
+Test both:
 
 ```bash
 ssh -i ~/.ssh/devops_key1 ubuntu@SERVER_IP
@@ -313,66 +290,34 @@ Both connections should succeed.
 
 ---
 
-# 🔒 Security Best Practices
+# 🔒 Security
 
-### 1. Never share private keys
+Never upload private SSH keys to GitHub.
 
-Do not share:
+Do **not** commit:
 
 ```text
+*.pem
 devops_key1
 devops_key2
 ```
 
-Only public keys should be placed on the server:
-
-```text
-devops_key1.pub
-devops_key2.pub
-```
-
-### 2. Never commit private keys to Git
-
-Add the following to `.gitignore`:
+Recommended `.gitignore`:
 
 ```gitignore
 *.pem
 *_key
-*_key.pub
 id_rsa
 id_rsa.pub
 ```
 
-### 3. Use correct SSH permissions
-
-Private keys:
+Set appropriate permissions:
 
 ```bash
 chmod 600 ~/.ssh/devops_key1
 chmod 600 ~/.ssh/devops_key2
-```
-
-SSH directory:
-
-```bash
 chmod 700 ~/.ssh
 ```
-
-Server authorized keys:
-
-```bash
-chmod 600 ~/.ssh/authorized_keys
-```
-
-### 4. Restrict SSH access
-
-Instead of:
-
-```text
-0.0.0.0/0
-```
-
-prefer allowing SSH only from trusted IP addresses whenever practical.
 
 ---
 
@@ -385,38 +330,53 @@ remote-linux-ssh/
 └── .gitignore
 ```
 
-**Important:** SSH private keys should **not** be included in this repository.
+Private keys are intentionally **not included** in the repository.
 
 ---
 
-# 🎯 What I Learned
+# ✅ Expected Result
 
-Through this project, I practiced:
+After completing the setup, the same remote Linux server should accept SSH connections using either key:
 
-* Provisioning a remote Linux server.
-* Connecting to Linux using SSH.
-* Generating Ed25519 SSH key pairs.
-* Understanding public/private key authentication.
-* Managing `~/.ssh/authorized_keys`.
-* Configuring SSH access for multiple keys.
-* Testing SSH authentication.
-* Applying basic Linux file permissions.
-* Following SSH security best practices.
+```text
+Local Machine
+     │
+     ├── devops_key1 ────────┐
+     │                       │
+     └── devops_key2 ────────┤
+                             ▼
+                     Remote Ubuntu Server
+                             │
+                      authorized_keys
+                       ┌─────┴─────┐
+                       │           │
+                    Public Key 1  Public Key 2
+```
+
+Both commands should successfully connect:
+
+```bash
+ssh -i ~/.ssh/devops_key1 ubuntu@SERVER_IP
+```
+
+```bash
+ssh -i ~/.ssh/devops_key2 ubuntu@SERVER_IP
+```
 
 ---
 
-# ✅ Project Completion Checklist
+# 🎯 Learning Outcomes
 
-* [x] Remote Linux server created
-* [x] SSH access enabled
-* [x] First SSH key pair created
-* [x] Second SSH key pair created
-* [x] First public key added to server
-* [x] Second public key added to server
-* [x] SSH connection tested with Key 1
-* [x] SSH connection tested with Key 2
-* [x] SSH key permissions configured
-* [x] Private keys kept secure
+This project demonstrates practical knowledge of:
+
+* Linux server administration
+* SSH
+* Public/private key authentication
+* SSH key management
+* Linux file permissions
+* Cloud server provisioning
+* Remote server access
+* Basic server security
 
 ---
 
@@ -426,5 +386,4 @@ Through this project, I practiced:
 
 DevOps / Cloud Engineer
 
-Skills: AWS | Linux | Docker | Terraform | Jenkins | Kubernetes | Git | CI/CD
-
+**Skills:** AWS | Linux | Docker | Terraform | Jenkins | Kubernetes | Git | CI/CD
