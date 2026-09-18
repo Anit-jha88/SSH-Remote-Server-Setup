@@ -8,7 +8,7 @@ This project demonstrates how to configure a remote Linux server to allow SSH co
 
 * Create a remote Linux server. 
 * Generate two SSH key pairs.
-* Add both public keys to the remote server.
+* Add both public keys to the remote server. 
 * Configure SSH key-based authentication.
 * Verify SSH access using both private keys.
 
