@@ -4,7 +4,7 @@
 
 This project demonstrates how to configure a remote Linux server to allow SSH connections using **two separate SSH key pairs**.
 
-### Objectives 
+### Objectives  
 
 * Create a remote Linux server. 
 * Generate two SSH key pairs.
